@@ -1,7 +1,3 @@
-Below is a README.md template that you could use for your project hosted at https://wreiske.github.io/vtt-talk-percentage/. It introduces the project, guides users on how to use the tool, provides a brief overview of how it works, and offers a way to contribute or report issues.
-
----
-
 # VTT Talk Percentage Analyzer
 
 Welcome to the VTT Talk Percentage Analyzer, a simple, browser-based tool designed to analyze and display the percentage of time each speaker talks in a VTT (Web Video Text Tracks) file. This tool is perfect for meetings, webinars, and any event recordings where multiple speakers are involved and you're curious about the distribution of speaking time.
