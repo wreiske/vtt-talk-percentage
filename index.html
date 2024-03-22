@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VTT File Analyzer</title>
+</head>
+<body>
+    <h2>Upload VTT File</h2>
+    <input type="file" id="fileInput">
+    <button onclick="processFile()">Analyze</button>
+    <div id="results"></div>
+
+    <script>
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const transcript = e.target.result;
+                    const speakerPercentages = analyzeSpeakerPercentages(transcript);
+                    displayResults(speakerPercentages);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function analyzeSpeakerPercentages(transcript) {
+            const timestampToDateTime = (timestamp) => new Date('1970-01-01T' + timestamp + 'Z');
+
+            const pattern = /(\d+) "([^"]+)" \(\d+\)\n(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\n/g;
+            let match;
+            const speakerDurations = {};
+
+            while ((match = pattern.exec(transcript)) !== null) {
+                const speaker = match[2];
+                const start = timestampToDateTime(match[3]).getTime();
+                const end = timestampToDateTime(match[4]).getTime();
+                const duration = end - start;
+
+                if (speaker in speakerDurations) {
+                    speakerDurations[speaker] += duration;
+                } else {
+                    speakerDurations[speaker] = duration;
+                }
+            }
+
+            const totalDuration = Object.values(speakerDurations).reduce((acc, cur) => acc + cur, 0);
+            const speakerPercentages = {};
+            for (const speaker in speakerDurations) {
+                speakerPercentages[speaker] = (speakerDurations[speaker] / totalDuration * 100).toFixed(2);
+            }
+
+            return speakerPercentages;
+        }
+
+        function displayResults(speakerPercentages) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3>Speaker Percentages</h3>';
+            for (const speaker in speakerPercentages) {
+                resultsDiv.innerHTML += `<p>${speaker}: ${speakerPercentages[speaker]}%</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
